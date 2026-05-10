@@ -2,6 +2,18 @@
 
 Monorepo yang menyediakan unified interface untuk berbagai LLM provider (Groq, Anthropic, OpenAI) lengkap dengan REST API, async job queue, dan developer dashboard.
 
+## Fitur Utama
+
+- **Unified LLM Interface**: Satu standar untuk Groq, Anthropic, dan OpenAI.
+- **Persistent Playground**:
+  - **Chat History**: Manajemen sesi otomatis (tersimpan di browser).
+  - **Session Management**: Rename, Delete, dan Pin chat penting ke posisi atas.
+  - **Bubble Actions**: Fitur Copy, Edit pesan lama, dan Retry request yang gagal langsung dari bubble chat.
+  - **Rich Config**: Kendali penuh atas System Prompt, Temperature, Max Tokens, dan Streaming mode.
+- **Async Automation**: Sistem antrean (Queue) berbasis BullMQ untuk pemrosesan background task skala besar.
+- **Real-time Analytics**: Monitoring penggunaan token, latency, dan distribusi request per provider dengan sistem database JSON yang ringan dan portable.
+- **Modern UI/UX**: Desain dashboard 3-kolom yang premium dengan icon SVG minimalis dan dark mode.
+
 ## Packages
 
 | Package | Deskripsi |
@@ -102,11 +114,15 @@ Mode async — request masuk ke queue, mengembalikan `jobId`:
 
 ### `POST /v1/chat/stream`
 
-Streaming response via Server-Sent Events (SSE).
+Streaming response via Server-Sent Events (SSE) untuk interaksi real-time.
+
+### `GET /v1/chat/stats`
+
+Ambil data statistik penggunaan (token, latency, provider distribution) dari database JSON.
 
 ### `GET /v1/chat/job/:jobId`
 
-Cek status dan hasil job async.
+Cek status (`waiting`, `active`, `completed`, `failed`) dan hasil dari job asinkron.
 
 ### `GET /health`
 
@@ -116,9 +132,9 @@ Health check.
 
 Dashboard di `localhost:5173` terdiri dari:
 
-- **Playground** — test semua provider dan model dengan dukungan system prompt, temperature, max tokens, dan streaming
-- **Job Queue** — kirim async job dan pantau statusnya secara real-time
-- **Stats** — monitor penggunaan token, latency, dan jumlah request per provider
+- **Playground** — Interface chat interaktif dengan riwayat sesi yang persisten dan fitur edit/retry pesan.
+- **Job Queue** — Dashboard antrean untuk memantau proses background task yang sedang berjalan.
+- **Stats** — Visualisasi data analitik sistem menggunakan grafik interaktif (Recharts).
 
 ## Struktur Project
 
