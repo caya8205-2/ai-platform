@@ -1,0 +1,26 @@
+{
+    "name": "@ai-platform/api",
+    "version": "0.0.1",
+    "private": true,
+    "type": "module",
+    "main": "./dist/index.js",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsx watch src/index.ts",
+        "typecheck": "tsc --noEmit",
+        "clean": "rm -rf dist"
+    },
+    "dependencies": {
+        "@ai-platform/core": "workspace:*",
+        "@ai-platform/shared": "workspace:*",
+        "@ai-platform/queue": "workspace:*",
+        "express": "^4.19.0",
+        "dotenv": "^16.4.0",
+        "zod": "^3.23.0"
+    },
+    "devDependencies": {
+        "@types/express": "^4.17.21",
+        "typescript": "^5.4.5",
+        "tsx": "^4.7.0"
+    }
+}
