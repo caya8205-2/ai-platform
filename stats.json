@@ -1,0 +1,11 @@
+[
+  {
+    "provider": "groq",
+    "model": "llama-3.3-70b-versatile",
+    "prompt_tokens": 570,
+    "completion_tokens": 95,
+    "total_tokens": 665,
+    "latency_ms": 1649,
+    "timestamp": "2026-05-10T12:59:22.073Z"
+  }
+]

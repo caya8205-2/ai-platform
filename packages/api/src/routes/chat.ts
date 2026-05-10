@@ -1,6 +1,6 @@
 import { Router, type Request, type Response, type Router as RouterType } from "express";
 import { z } from "zod";
-import { createLLMClient, createDefaultClient } from "@ai-platform/core";
+import { createLLMClient, createDefaultClient, logUsage, getStats } from "@ai-platform/core";
 import { chatQueue } from "@ai-platform/queue";
 import { randomUUID } from "crypto";
 
@@ -35,7 +35,8 @@ chatRouter.post("/", async (req: Request, res: Response) => {
     // async mode — dispatch ke queue
     if (isAsync) {
         const jobId = randomUUID();
-        await chatQueue.add("chat", { jobId, messages, provider, model, maxTokens, temperature, topP, stop });
+        // Masukkan jobId ke dalam opsi BullMQ (argumen ketiga)
+        await chatQueue.add("chat", { jobId, messages, provider, model, maxTokens, temperature, topP, stop }, { jobId });
         res.status(202).json({ jobId, status: "queued" });
         return;
     }
@@ -47,6 +48,17 @@ chatRouter.post("/", async (req: Request, res: Response) => {
             : createDefaultClient();
 
         const result = await client.chat(messages, { maxTokens, temperature, topP, stop });
+        
+        // Log to SQLite (async)
+        await logUsage({
+            provider: provider || "default",
+            model: model || "default",
+            prompt_tokens: result.usage.promptTokens,
+            completion_tokens: result.usage.completionTokens,
+            total_tokens: result.usage.totalTokens,
+            latency_ms: result.latencyMs
+        });
+
         res.json(result);
     } catch (err) {
         console.error("LLM Call Error:", err);
@@ -67,6 +79,17 @@ chatRouter.get("/job/:jobId", async (req: Request, res: Response) => {
     const result = job.returnvalue;
 
     res.json({ jobId: job.id, state, result: result ?? null });
+});
+
+// GET /v1/chat/stats — ambil data dari SQLite
+chatRouter.get("/stats", async (_req: Request, res: Response) => {
+    try {
+        const stats = await getStats();
+        res.json(stats);
+    } catch (err) {
+        console.error("Stats Error:", err);
+        res.status(500).json({ error: "Failed to fetch stats" });
+    }
 });
 
 // POST /v1/chat/stream — SSE streaming

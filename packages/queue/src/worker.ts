@@ -1,5 +1,5 @@
 import { Worker } from "bullmq";
-import { createLLMClient, createDefaultClient } from "@ai-platform/core";
+import { createLLMClient, createDefaultClient, logUsage } from "@ai-platform/core";
 import type { ChatJobData, ChatJobResult } from "./types.js";
 
 export function createChatWorker(redisUrl: string) {
@@ -13,6 +13,16 @@ export function createChatWorker(redisUrl: string) {
                 : createDefaultClient();
 
             const result = await client.chat(messages, { maxTokens, temperature, topP, stop });
+            
+            // Log to SQLite (async)
+            await logUsage({
+                provider: provider || "default",
+                model: model || "default",
+                prompt_tokens: result.usage.promptTokens,
+                completion_tokens: result.usage.completionTokens,
+                total_tokens: result.usage.totalTokens,
+                latency_ms: result.latencyMs
+            });
 
             return {
                 jobId: job.data.jobId,
