@@ -32,9 +32,9 @@ Monorepo yang menyediakan unified interface untuk berbagai LLM provider (Groq, A
 ### Instalasi
 
 ```bash
-git clone https://github.com/your-username/ai-platform.git
+git clone https://github.com/caya8205-2/ai-platform.git
 cd ai-platform
-pnpm install
+pnpm i
 ```
 
 ### Environment
@@ -69,6 +69,8 @@ pnpm dev
 |---|---|
 | API | http://localhost:3000 |
 | Dashboard | http://localhost:5173 |
+
+> (Kalo error ECONNREFUSED itu berarti redis nya mati, start dulu pake Docker atau WSL)
 
 ## API Endpoints
 
